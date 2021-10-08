@@ -73,6 +73,7 @@ namespace MemoryRandomizer.UI
                     this.DresssphereViewModel.Randomize,
                     false, //this.GarmentGridViewModel.Randomize,
                     false,
+                    this.DresssphereViewModel.ChaosMode,
                     this.DresssphereViewModel.LoadSave,
                     false, //this.GarmentGridViewModel.LoadSave,
                     false

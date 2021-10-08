@@ -18,6 +18,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
@@ -33,11 +35,18 @@
 
         <materialDesign:Card Grid.Row="1" Grid.ColumnSpan="5" Margin="10">
             <StackPanel Orientation="Horizontal" Margin="10">
+                <CheckBox IsChecked="{Binding ChaosMode}"></CheckBox>
+                <Label>Chaos Mode</Label>
+            </StackPanel>
+        </materialDesign:Card>
+
+        <materialDesign:Card Grid.Row="2" Grid.ColumnSpan="5" Margin="10">
+            <StackPanel Orientation="Horizontal" Margin="10">
                 <CheckBox IsChecked="{Binding LoadSave}"></CheckBox>
                 <Label>Automatically load save</Label>
             </StackPanel>
         </materialDesign:Card>
 
-        <Button Grid.Row="1" Grid.Column="4" Margin="10 0 20 0" Command="{Binding DeleteCommand}">Delete Save</Button>
+        <Button Grid.Row="2" Grid.Column="4" Margin="10 0 20 0" Command="{Binding DeleteCommand}">Delete Save</Button>
     </Grid>
 </UserControl>

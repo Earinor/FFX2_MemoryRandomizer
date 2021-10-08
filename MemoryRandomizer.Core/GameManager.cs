@@ -41,7 +41,7 @@ namespace MemoryRandomizer.Core
         /// <param name="randomizeDS"></param>
         /// <param name="randomizeGG"></param>
         /// <param name="randomizeBoth"></param>
-        public void Startup(bool randomizeDS, bool randomizeGG, bool randomizeBoth, bool randomizeDSTC, bool loadDS = true, bool loadGG = true, bool loadBoth = true, bool loadChaosDS = false)
+        public void Startup(bool randomizeDS, bool randomizeGG, bool randomizeBoth, bool randomizeDSTC, bool loadDS = true, bool loadGG = true, bool loadBoth = true)
         {
             // Read save files
             if (randomizeBoth && loadBoth)
@@ -64,7 +64,7 @@ namespace MemoryRandomizer.Core
             FindAndOpenGameProcess();
 
             // Initial read
-            DoInitialReadsAndShuffle(randomizeBoth, randomizeDSTC, loadChaosDS);
+            DoInitialReadsAndShuffle(randomizeBoth, randomizeDSTC);
             byteArrayHandler = new ByteArrayHandler(dm, ggm, rim);
             // We need to write after the Initial read and shuffle, or the Mapping will not fit the  current state
             DoInitialWrite(randomizeBoth, randomizeDSTC, randomizeDS, randomizeGG);
@@ -190,7 +190,7 @@ namespace MemoryRandomizer.Core
         #endregion process
 
 
-        private void DoInitialReadsAndShuffle(bool randomizeBoth, bool totalChaos, bool loadDSTC)
+        private void DoInitialReadsAndShuffle(bool randomizeBoth, bool totalChaos)
         {
             while (randomizeBoth && !initialReadDoneBoth)
             {
@@ -198,7 +198,7 @@ namespace MemoryRandomizer.Core
                 byte[] initialMemoryBytesGG = mReader.ReadMemory((IntPtr)((uint)mGameProcess.Modules[0].BaseAddress + startOfGGSaves), 0x8, out bytesOutGG);
 
                 rim = new RandomizableItemMapping(initialMemoryBytesDS, initialMemoryBytesGG);
-                initialReadDoneBoth = DoInitialShuffle(rim, bytesOutDS <= 0 || bytesOutGG <= 0);
+                initialReadDoneBoth = DoInitialShuffle(rim, bytesOutDS > 0 || bytesOutGG > 0);
 
             }
             while (!initialReadDoneDS)
@@ -208,11 +208,11 @@ namespace MemoryRandomizer.Core
                 dm = new DresssphereMapping(initialMemoryBytes);
                 if (totalChaos)
                 {
-                    initialReadDoneDS = DoInitiateOnly(dm, bytesOutDS <= 0, loadDSTC);
+                    initialReadDoneDS = DoInitiateOnly(dm, bytesOutDS > 0, totalChaos);
                 }
                 else
                 {
-                    initialReadDoneDS = DoInitialShuffle(dm, bytesOutDS <= 0);
+                    initialReadDoneDS = DoInitialShuffle(dm, bytesOutDS > 0);
                 }
             }
             while (!initialReadDoneGG)
@@ -220,13 +220,13 @@ namespace MemoryRandomizer.Core
                 byte[] initialMemoryBytes = mReader.ReadMemory((IntPtr)((uint)mGameProcess.Modules[0].BaseAddress + startOfGGSaves), 0x8, out bytesOutGG);
 
                 ggm = new GarmentGridMapping(initialMemoryBytes);
-                initialReadDoneGG = DoInitialShuffle(ggm, bytesOutGG <= 0);
+                initialReadDoneGG = DoInitialShuffle(ggm, bytesOutGG > 0);
             }
         }
 
         private static bool DoInitialShuffle<T>(IMapping<T> mapping, bool readSuccessful)
         {
-            if (readSuccessful)
+            if (! readSuccessful)
             {
                 FindAndOpenGameProcess();
 
@@ -244,7 +244,7 @@ namespace MemoryRandomizer.Core
         }
         private static bool DoInitiateOnly<T>(IMapping<T> mapping, bool readSuccessful, bool loadDSTC) where T : Dresssphere
         {
-            if (readSuccessful)
+            if (! readSuccessful)
             {
                 FindAndOpenGameProcess();
                 return false;
